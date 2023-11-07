@@ -11,4 +11,4 @@ class BasicAuth(Auth):
     """
     a BasicAuth class that inherits from Auth
     """
-    return None
+    pass
