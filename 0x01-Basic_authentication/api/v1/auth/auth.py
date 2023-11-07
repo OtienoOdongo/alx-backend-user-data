@@ -1,58 +1,75 @@
 #!/usr/bin/env python3
 """
-a BasicAuth class that inherits from Auth
+class that manages API authentication
+its template for all authentication system
+that will be implemented
 """
 
 
-from api.v1.auth.auth import Auth
+from flask import request
+from typing import List, TypeVar
 
 
-class BasicAuth(Auth):
-    """
-    a BasicAuth class that inherits from Auth
-    """
-    def extract_base64_authorization_header(
-        self,
-        authorization_header: str
-    ) -> str:
+class Auth:
+    """API authentication management"""
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Extract the Base64-encoded credentials 
-        from a Basic Authentication header.
+        Checking if authentication is required for the given path.
 
         Args:
-            authorization_header (str):
-                Authorization header string containing
-                Basic Authentication credentials.
+            path (str):
+            The path to check for authentication requirement.
+            excluded_paths (List[str]):
+            A list of paths that are excluded from authentication.
+
+        Returns:
+            bool:
+            True if authentication is required, False otherwise.
+        """
+        # Checking if the path is None or excluded_paths is None or empty
+        if path is None or not excluded_paths:
+            return True
+
+        # Add a trailing slash to the path if it doesn't have one
+        if not path.endswith('/'):
+            path += '/'
+
+        # Iterate through excluded_paths and check if path is in it
+        for excluded_path in excluded_paths:
+            if excluded_path == path:
+                return False
+
+        return True
+
+    def authorization_header(self, request=None) -> str:
+        """
+        Getting the authorization header from the request.
+
+        Args:
+            request (Request):
+            The Flask request object.
 
         Returns:
             str:
-                The Base64 part of the Authorization
-                header for Basic Authentication.
+            The authorization header if present
+            otherwise return None.
         """
-        if (
-            authorization_header is None
-            or not isinstance(authorization_header, str)
-            or not authorization_header.startswith('Basic ')
-        ):
+        if request is None:
             return None
+        else:
+            return request.headers.get('Authorization')
 
-        # Extracting the Base64 part after 'Basic '
-        base64_encoded = authorization_header[len('Basic '):]
-        return base64_encoded
-        
-    def decode_base64_authorization_header(
-        self, base64_authorization_header: str
-    ) -> str:
+    def current_user(self, request=None) -> TypeVar('User'):
         """
-        Base64 encode authorization_header
+        Getting the current user based on the request.
+
+        Args:
+            request (Request):
+            The Flask request object.
+
+        Returns:
+            TypeVar('User'):
+            The current user if authenticated
+            otherwise return None.
         """
-        if (
-            base64_authorization_header is None
-            or type(base64_authorization_header) != str
-        ):
-            return None
-        try:
-            encoded = base64.b64decode(base64_authorization_header)
-            return encoded.decode('utf-8')
-        except Exception:
-            return None
+        return None
