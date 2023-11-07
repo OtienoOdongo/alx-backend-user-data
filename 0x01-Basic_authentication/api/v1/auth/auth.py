@@ -27,7 +27,7 @@ class Auth:
             True if authentication is required, False otherwise.
         """
         # Checking if the path is None or excluded_paths is None or empty
-        if path is None or not ex_paths:
+        if path is None or not excluded_paths:
             return True
 
         # Add a trailing slash to the path if it doesn't have one
@@ -35,7 +35,7 @@ class Auth:
             path += '/'
 
         # Iterate through excluded_paths and check if path is in it
-        for ex_path in ex_paths:
+        for ex_path in excluded_paths:
             if ex_path.endswith('*') and path.startswith(ex_path[:-1]):
                 return False
 
