@@ -37,7 +37,7 @@ def before_request() -> None:
     # Checking if authorization header is present
     if not auth.authorization_header(request):
         abort(401)
-    
+
     # Check if current user is authenticated
     request.current_user = auth.current_user(request)
     if not request.current_user:
