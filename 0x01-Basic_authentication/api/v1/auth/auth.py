@@ -30,13 +30,12 @@ class Auth:
         if path is None or not excluded_paths:
             return True
 
-        # Add a trailing slash to the path if it doesn't have one
-        if not path.endswith('/'):
-            path += '/'
-
         # Iterate through excluded_paths and check if path is in it
         for ex_path in excluded_paths:
-            if ex_path.endswith('*') and path.startswith(ex_path[:-1]):
+            if ex_path.endswith('*'):
+                if path.startswith(ex_path[:-1]):
+                    return False
+            elif path == ex_path or path + '/' == ex_path:
                 return False
 
         return True
