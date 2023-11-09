@@ -30,18 +30,13 @@ def before_request() -> None:
     """
     paths = ['/api/v1/status/', '/api/v1/unauthorized/',
              '/api/v1/forbidden/']
-    # Checking if authentication is not required for the path
-    if not auth.require_auth(request.path, paths):
-        return None
-
-    # Checking if authorization header is present
-    if not auth.authorization_header(request):
-        abort(401)
-
-    # Check if current user is authenticated
-    request.current_user = auth.current_user(request)
-    if not request.current_user:
-        abort(403)
+    if auth is not None and auth.require_auth(request.path, paths):
+        if auth.authorization_header(request) is None:
+            abort(401)
+        # Checking if current user is authenticated
+        request.current_user = auth.current_user(request)
+        if not request.current_user:
+            abort(403)
 
 
 @app.errorhandler(404)
