@@ -61,6 +61,8 @@ def logout() -> str:
         An empty JSON dictionary
         and a status code 200 on success or 404 on failure
     """
+    from api.v1.app import auth
+
     if not auth.destroy_session(request):
         abort(404)
     return jsonify({}), 200
