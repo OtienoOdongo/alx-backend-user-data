@@ -51,7 +51,7 @@ def session_login():
     return response
 
 
-@app.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+@app_views.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
 def logout() -> str:
     """
     This method Logs out the user by destroying their session.
