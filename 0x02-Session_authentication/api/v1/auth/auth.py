@@ -72,3 +72,17 @@ class Auth:
             otherwise return None.
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Returns a cookie value from a request.
+
+        Returns (str):
+            The value of the cookie defined by the
+            environment variable SESSION_NAME, or None.
+        """
+        if request is None:
+            return None
+
+        session_name = request.app.config.get("SESSION_NAME")
+        return request.cookies.get(session_name)
