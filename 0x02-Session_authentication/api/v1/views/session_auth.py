@@ -49,3 +49,18 @@ def session_login():
     if session_name and session_id:
         response.set_cookie(session_name, session_id)
     return response
+
+
+@app.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """
+    This method Logs out the user by destroying their session.
+
+    Returns:
+        tuple:
+        An empty JSON dictionary
+        and a status code 200 on success or 404 on failure
+    """
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({}), 200
