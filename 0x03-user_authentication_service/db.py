@@ -41,40 +41,39 @@ class DB:
         new_user = User(email=email, hashed_password=hashed_password)
         self._session.add(new_user)
         self._session.commit()
+        self._session.refresh(new_user)
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
         """
-        finding a user with a given set of attributes
+        Finding a user with a given set of attributes.
 
         Returns:
-            User: user is found,
-            otherwise NoResultFound and InvalidRequestError are raised
-            when no user is found,
-            or when wrong query arguments are passed
+            User: User if found.
+
+        Raises:
+            NoResultFound: When no user is found.
         """
-        try:
-            user = self._session.query(User).filter_by(**kwargs).first()
-            if user is None:
-                raise NoResultFound
-        except InvalidRequestError:
-            raise InvalidRequestError("Invalid query argument")
+        user = self._session.query(User).filter_by(**kwargs).first()
+        if user is None:
+            raise NoResultFound("No user found with the specified attributes.")
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
-        """
-        updating details of an existing users
 
-        Return:
-            user's attributes: updated user's attributes, otherwise
-            raise a ValueError if the attribute doesn't  correspond
-            to the user attribute passed
+        """
+        Updating details of an existing user.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If an invalid attribute is passed.
         """
         user_details = self.find_user_by(id=user_id)
         for key, val in kwargs.items():
             if hasattr(user_details, key):
                 setattr(user_details, key, val)
             else:
-                raise ValueError
+                raise ValueError(f"Invalid attribute: {key}")
         self._session.commit()
-        return None
