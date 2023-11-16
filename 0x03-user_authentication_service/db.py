@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from typing import TypeVar
 
 from user import Base, User
 
@@ -40,7 +39,7 @@ class DB:
         creating/adding a new user to the db
         """
         new_user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
+        self._session.add(new_user)
         self._session.commit()
         return new_user
 
@@ -56,10 +55,10 @@ class DB:
         """
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
-        except TypeError:
-            raise InvalidRequestError
-        if user is None:
-            raise NoResultFound
+            if user is None:
+                raise NoResultFound
+        except InvalidRequestError:
+            raise InvalidRequestError("Invalid query argument")
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
@@ -77,5 +76,5 @@ class DB:
                 setattr(user_details, key, val)
             else:
                 raise ValueError
-        self.__session.add(user_details)
         self._session.commit()
+        return None
