@@ -50,6 +50,25 @@ class Auth:
     def __init__(self):
         self._db = DB()
 
+    @staticmethod
+    def _hash_password(password: str) -> str:
+        """
+        Hashing a password using bcrypt with a random salt.
+
+        Parameters:
+            password(str): The passwrd to be hashed.
+
+        Returns:
+            bytes: The salted hash of the password.
+        """
+        # Generating a random salt
+        rand_salt = bcrypt.gensalt()
+
+        # Hashing the password with the generated salt
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), rand_salt)
+
+        return hashed_password
+
     def register_user(self, email: str, password: str) -> User:
         """
         Registering a new user if its details does not exist in the db
