@@ -123,15 +123,14 @@ def get_reset_password_token() -> str:
     Returns:
         JSON: {"email": "<user email>", "reset_token": "<reset token>"}
     """
-    email = request.form.get("email")
+    email = request.form.get('email')
+    user = AUTH.create_session(email)
 
-    try:
-        reset_token = AUTH.get_reset_password_token(email)
-        user = AUTH.get_user_from_email(email)
-        response_data = {"email": user.email, "reset_token": reset_token}
-        return jsonify(response_data), 200
-    except ValueError:
+    if not user:
         abort(403)
+    else:
+        reset_token = AUTH.get_reset_password_token(email)
+        return jsonify({"email": f"{email}", "reset_token": f"{reset_token}"})
 
 
 @app.route('/reset_password', methods=['PUT'], strict_slashes=False)
